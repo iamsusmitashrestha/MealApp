@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 class MealDetailScreen extends StatelessWidget {
   static const routeName = '/meal-detail';
 
+  final Function toggleFavorite;
+  final Function isFavorite;
+
+  MealDetailScreen(this.toggleFavorite, this.isFavorite);
+
   Widget _buildsectionTitle(String secTitle, BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(
@@ -35,39 +40,40 @@ class MealDetailScreen extends StatelessWidget {
     final mealId = ModalRoute.of(context).settings.arguments as String;
     final selectedMeal = DUMMY_MEALS.firstWhere((meal) => meal.id == mealId);
     return Scaffold(
-        appBar: AppBar(
-          title: Text("${selectedMeal.title}"),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 300,
-                child: Image.network(
-                  selectedMeal.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+      appBar: AppBar(
+        title: Text("${selectedMeal.title}"),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: 300,
+              child: Image.network(
+                selectedMeal.imageUrl,
+                fit: BoxFit.cover,
               ),
-              _buildsectionTitle("Ingredients", context),
-              _buildContainer(
-                ListView.builder(
-                  itemCount: selectedMeal.ingredients.length,
-                  itemBuilder: (ctx, index) {
-                    return Card(
-                      color: Theme.of(context).accentColor,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 5.0,
-                          horizontal: 10,
-                        ),
-                        child: Text(selectedMeal.ingredients[index]),
+            ),
+            _buildsectionTitle("Ingredients", context),
+            _buildContainer(
+              ListView.builder(
+                itemCount: selectedMeal.ingredients.length,
+                itemBuilder: (ctx, index) {
+                  return Card(
+                    color: Theme.of(context).accentColor,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 5.0,
+                        horizontal: 10,
                       ),
-                    );
-                  },
-                ),
+                      child: Text(selectedMeal.ingredients[index]),
+                    ),
+                  );
+                },
               ),
-              _buildsectionTitle("Steps", context),
-              _buildContainer(ListView.builder(
+            ),
+            _buildsectionTitle("Steps", context),
+            _buildContainer(
+              ListView.builder(
                 itemCount: selectedMeal.steps.length,
                 itemBuilder: (context, index) {
                   return Column(
@@ -82,9 +88,15 @@ class MealDetailScreen extends StatelessWidget {
                     ],
                   );
                 },
-              ))
-            ],
-          ),
-        ));
+              ),
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(isFavorite(mealId) ? Icons.star : Icons.star_border),
+        onPressed: () => toggleFavorite(mealId),
+      ),
+    );
   }
 }
